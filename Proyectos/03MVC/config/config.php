@@ -1,22 +1,64 @@
 <?php
+/**
+ * Clase de conexión a base de datos SQLite
+ * Sistema de Facturación
+ */
+
 class ClaseConectar
 {
-    public $conexion;
-    protected $db;
-    private $host = "localhost";
-    private $usuario = "root";
-    private $pass = "root";
-    private $base = "sexto";
+    private $dbPath;
+    protected $conexion;
+
+    public function __construct()
+    {
+        $this->dbPath = __DIR__ . '/../database/facturacion.db';
+    }
+
+    /**
+     * Establece la conexión con la base de datos SQLite
+     * @return PDO Conexión PDO a SQLite
+     */
     public function ProcedimientoParaConectar()
     {
-        $this->conexion = mysqli_connect($this->host, $this->usuario, $this->pass, $this->base);
-        mysqli_query($this->conexion, "SET NAMES 'utf8'");
-        if ($this->conexion->connect_error) {
-            die("Error al conectar con el servidor: " . $this->conexion->connect_error);
-        }
-        $this->db = $this->conexion;
-        if ($this->db == false) die("Error al conectar con la base de datos: " . $this->conexion->connect_error);
+        try {
+            // Verificar si el archivo de base de datos existe
+            if (!file_exists($this->dbPath)) {
+                throw new Exception("Base de datos no encontrada. Ejecute init_db.php primero.");
+            }
 
-        return $this->conexion;
+            // Crear conexión PDO con SQLite
+            $this->conexion = new PDO('sqlite:' . $this->dbPath);
+            
+            // Configurar opciones de PDO
+            $this->conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conexion->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            
+            // Habilitar foreign keys en SQLite
+            $this->conexion->exec('PRAGMA foreign_keys = ON');
+
+            return $this->conexion;
+
+        } catch (PDOException $e) {
+            die("Error de conexión: " . $e->getMessage());
+        } catch (Exception $e) {
+            die("Error: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Cierra la conexión a la base de datos
+     */
+    public function cerrarConexion()
+    {
+        $this->conexion = null;
+    }
+
+    /**
+     * Obtiene la ruta de la base de datos
+     * @return string Ruta del archivo SQLite
+     */
+    public function getDbPath()
+    {
+        return $this->dbPath;
     }
 }
