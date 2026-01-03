@@ -1,81 +1,75 @@
 <?php
-//TODO: Clase de Provedores
-require_once('../config/config.php');
-class Provedores
+/**
+ * Modelo de Proveedores - PDO/SQLite
+ * Sistema de Facturación
+ */
+include_once(__DIR__ . '/../config/config.php');
+
+class Proveedores
 {
-    //TODO: Implementar los metodos de la clase
+    private $db;
 
-    public function todos() //select * from provedores
+    public function __construct()
     {
-        $con = new ClaseConectar();
-        $con = $con->ProcedimientoParaConectar();
-        $cadena = "SELECT * FROM `proveedores`";
-        $datos = mysqli_query($con, $cadena);
-        $con->close();
-        return $datos;
+        $conexion = new ClaseConectar();
+        $this->db = $conexion->ProcedimientoParaConectar();
     }
 
-    public function uno($idProveedores) //select * from provedores where id = $id
+    public function todos()
     {
-        $con = new ClaseConectar();
-        $con = $con->ProcedimientoParaConectar();
-        $cadena = "SELECT * FROM `proveedores` WHERE `idProveedores`=$idProveedores";
-        $datos = mysqli_query($con, $cadena);
-        $con->close();
-        return $datos;
+        $stmt = $this->db->query("SELECT * FROM Proveedores");
+        return $stmt->fetchAll();
     }
 
-    public function insertar($Nombre_Empresa, $Direccion, $Telefono, $Contacto_Empresa, $Teleofno_Contacto) //insert into provedores (nombre, direccion, telefono) values ($nombre, $direccion, $telefono)
+    public function uno($idProveedores)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM Proveedores WHERE idProveedores = :id");
+        $stmt->execute([':id' => $idProveedores]);
+        return $stmt->fetch();
+    }
+
+    public function insertar($Nombre_Empresa, $Direccion, $Telefono, $Contacto_Empresa, $Telefono_Contacto)
     {
         try {
-            $con = new ClaseConectar();
-            $con = $con->ProcedimientoParaConectar();
-            $cadena = "INSERT INTO `proveedores` ( `Nombre_Empresa`, `Direccion`, `Telefono`, `Contacto_Empresa`, `Teleofno_Contacto`) VALUES ('$Nombre_Empresa','$Direccion','$Telefono','$Contacto_Empresa','$Teleofno_Contacto')";
-            if (mysqli_query($con, $cadena)) {
-                return $con->insert_id;
-            } else {
-                return $con->error;
-            }
-        } catch (Exception $th) {
-            return $th->getMessage();
-        } finally {
-            $con->close();
+            $stmt = $this->db->prepare("INSERT INTO Proveedores (Nombre_Empresa, Direccion, Telefono, Contacto_Empresa, Telefono_Contacto) VALUES (:empresa, :direccion, :telefono, :contacto, :tel_contacto)");
+            $result = $stmt->execute([
+                ':empresa' => $Nombre_Empresa,
+                ':direccion' => $Direccion,
+                ':telefono' => $Telefono,
+                ':contacto' => $Contacto_Empresa,
+                ':tel_contacto' => $Telefono_Contacto
+            ]);
+            return $result ? $this->db->lastInsertId() : false;
+        } catch (PDOException $e) {
+            return ['error' => $e->getMessage()];
         }
     }
-    public function actualizar($idProveedores, $Nombre_Empresa, $Direccion, $Telefono, $Contacto_Empresa, $Teleofno_Contacto) //update provedores set nombre = $nombre, direccion = $direccion, telefono = $telefono where id = $id
+
+    public function actualizar($idProveedores, $Nombre_Empresa, $Direccion, $Telefono, $Contacto_Empresa, $Telefono_Contacto)
     {
         try {
-            $con = new ClaseConectar();
-            $con = $con->ProcedimientoParaConectar();
-            $cadena = "UPDATE `proveedores` SET `Nombre_Empresa`='$Nombre_Empresa',`Direccion`='$Direccion',`Telefono`='$Telefono',`Contacto_Empresa`='$Contacto_Empresa',`Teleofno_Contacto`='$Teleofno_Contacto' WHERE `idProveedores` = $idProveedores";
-
-            if (mysqli_query($con, $cadena)) {
-                return $idProveedores;
-            } else {
-                return $con->error;
-            }
-        } catch (Exception $th) {
-            return $th->getMessage();
-        } finally {
-            $con->close();
+            $stmt = $this->db->prepare("UPDATE Proveedores SET Nombre_Empresa = :empresa, Direccion = :direccion, Telefono = :telefono, Contacto_Empresa = :contacto, Telefono_Contacto = :tel_contacto WHERE idProveedores = :id");
+            $result = $stmt->execute([
+                ':id' => $idProveedores,
+                ':empresa' => $Nombre_Empresa,
+                ':direccion' => $Direccion,
+                ':telefono' => $Telefono,
+                ':contacto' => $Contacto_Empresa,
+                ':tel_contacto' => $Telefono_Contacto
+            ]);
+            return $result ? $idProveedores : false;
+        } catch (PDOException $e) {
+            return ['error' => $e->getMessage()];
         }
     }
-    public function eliminar($idProveedores) //delete from provedores where id = $id
+
+    public function eliminar($idProveedores)
     {
         try {
-            $con = new ClaseConectar();
-            $con = $con->ProcedimientoParaConectar();
-            $cadena = "DELETE FROM `proveedores` WHERE `idProveedores`= $idProveedores";
-            // echo $cadena;
-            if (mysqli_query($con, $cadena)) {
-                return 1;
-            } else {
-                return $con->error;
-            }
-        } catch (Exception $th) {
-            return $th->getMessage();
-        } finally {
-            $con->close();
+            $stmt = $this->db->prepare("DELETE FROM Proveedores WHERE idProveedores = :id");
+            return $stmt->execute([':id' => $idProveedores]);
+        } catch (PDOException $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 }

@@ -1,85 +1,69 @@
 <?php
-// Modelo de UnidadDeMedida
-require_once('../config/config.php');
+/**
+ * Modelo de Unidad de Medida - PDO/SQLite
+ * Sistema de Facturación
+ */
+include_once(__DIR__ . '/../config/config.php');
 
-class UnidadDeMedida
+class UnidadMedida
 {
-    public function todos() // select * from unidad_medida
+    private $db;
+
+    public function __construct()
     {
-        $con = new ClaseConectar();
-        $con = $con->ProcedimientoParaConectar();
-        $cadena = "SELECT * FROM `unidad_medida`";
-        $datos = mysqli_query($con, $cadena);
-        $con->close();
-        return $datos;
+        $conexion = new ClaseConectar();
+        $this->db = $conexion->ProcedimientoParaConectar();
     }
 
-    public function uno($idUnidad) // select * from unidad_medida where id = $idUnidad
+    public function todos()
     {
-        $con = new ClaseConectar();
-        $con = $con->ProcedimientoParaConectar();
-        $cadena = "SELECT * FROM `unidad_medida` WHERE `idUnidad_Medida` = $idUnidad";
-        $datos = mysqli_query($con, $cadena);
-        $con->close();
-        return $datos;
+        $stmt = $this->db->query("SELECT * FROM Unidad_Medida");
+        return $stmt->fetchAll();
     }
 
-    public function insertar($Descripcion, $Tipo) // insert into unidad_medida (...) values (...)
+    public function uno($idUnidad)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM Unidad_Medida WHERE idUnidad_Medida = :id");
+        $stmt->execute([':id' => $idUnidad]);
+        return $stmt->fetch();
+    }
+
+    public function insertar($Detalle, $Tipo)
     {
         try {
-            $con = new ClaseConectar();
-            $con = $con->ProcedimientoParaConectar();
-            $cadena = "INSERT INTO `unidad_medida`( `Detalle`, `Tipo`) 
-                       VALUES ( '$Descripcion', '$Tipo')";
-            if (mysqli_query($con, $cadena)) {
-                return $con->insert_id; // Retorna el ID insertado
-            } else {
-                return $con->error;
-            }
-        } catch (Exception $th) {
-            return $th->getMessage();
-        } finally {
-            $con->close();
+            $stmt = $this->db->prepare("INSERT INTO Unidad_Medida (Detalle, Tipo) VALUES (:detalle, :tipo)");
+            $result = $stmt->execute([
+                ':detalle' => $Detalle,
+                ':tipo' => $Tipo
+            ]);
+            return $result ? $this->db->lastInsertId() : false;
+        } catch (PDOException $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
-    public function actualizar($idUnidad,  $Descripcion, $Tipo) // update unidad_medida set ... where id = $idUnidad
+    public function actualizar($idUnidad, $Detalle, $Tipo)
     {
         try {
-            $con = new ClaseConectar();
-            $con = $con->ProcedimientoParaConectar();
-            $cadena = "UPDATE `unidad_medida` SET 
-                      
-                       `Detalle`='$Descripcion',
-                       `Tipo`='$Tipo'
-                       WHERE `idUnidad_Medida` = $idUnidad";
-            if (mysqli_query($con, $cadena)) {
-                return $idUnidad; // Retorna el ID actualizado
-            } else {
-                return $con->error;
-            }
-        } catch (Exception $th) {
-            return $th->getMessage();
-        } finally {
-            $con->close();
+            $stmt = $this->db->prepare("UPDATE Unidad_Medida SET Detalle = :detalle, Tipo = :tipo WHERE idUnidad_Medida = :id");
+            $result = $stmt->execute([
+                ':id' => $idUnidad,
+                ':detalle' => $Detalle,
+                ':tipo' => $Tipo
+            ]);
+            return $result ? $idUnidad : false;
+        } catch (PDOException $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
-    public function eliminar($idUnidad) // delete from unidad_medida where id = $idUnidad
+    public function eliminar($idUnidad)
     {
         try {
-            $con = new ClaseConectar();
-            $con = $con->ProcedimientoParaConectar();
-            $cadena = "DELETE FROM `unidad_medida` WHERE `idUnidad_Medida`= $idUnidad";
-            if (mysqli_query($con, $cadena)) {
-                return 1; // Éxito
-            } else {
-                return $con->error;
-            }
-        } catch (Exception $th) {
-            return $th->getMessage();
-        } finally {
-            $con->close();
+            $stmt = $this->db->prepare("DELETE FROM Unidad_Medida WHERE idUnidad_Medida = :id");
+            return $stmt->execute([':id' => $idUnidad]);
+        } catch (PDOException $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 }

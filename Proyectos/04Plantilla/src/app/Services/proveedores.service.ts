@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Iproveedor } from '../Interfaces/iproveedor';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProveedorService {
-  apiurl = 'http://localhost/sexto/Proyectos/03MVC/controllers/proveedores.controller.php?op=';
+  apiurl = environment.apiUrl + 'proveedores.controller.php?op=';
 
   constructor(private lector: HttpClient) {}
 

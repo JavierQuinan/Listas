@@ -1,99 +1,82 @@
 <?php
-// TODO: Clase de Clientes Tienda Cel@g
-require_once('../config/config.php');
+/**
+ * Modelo de Clientes - PDO/SQLite
+ * Sistema de Facturación
+ */
+include_once(__DIR__ . '/../config/config.php');
 
 class Clientes
 {
-    // TODO: Implementar los métodos de la clase
+    private $db;
 
-
-    public function buscar($textp) // select * from clientes
+    public function __construct()
     {
-        $con = new ClaseConectar();
-        $con = $con->ProcedimientoParaConectar();
-        $cadena = "SELECT * FROM `clientes` where nombres='$textp'";
-        $datos = mysqli_query($con, $cadena);
-        $con->close();
-        return $datos;
-    }
-    public function todos() // select * from clientes
-    {
-        $con = new ClaseConectar();
-        $con = $con->ProcedimientoParaConectar();
-        $cadena = "SELECT * FROM `clientes`";
-        $datos = mysqli_query($con, $cadena);
-        $con->close();
-        return $datos;
+        $conexion = new ClaseConectar();
+        $this->db = $conexion->ProcedimientoParaConectar();
     }
 
-    public function uno($idClientes) // select * from clientes where id = $idClientes
+    public function buscar($texto)
     {
-        $con = new ClaseConectar();
-        $con = $con->ProcedimientoParaConectar();
-        $cadena = "SELECT * FROM `clientes` WHERE `idClientes` = $idClientes";
-        $datos = mysqli_query($con, $cadena);
-        $con->close();
-        return $datos;
+        $stmt = $this->db->prepare("SELECT * FROM Clientes WHERE Nombres LIKE :texto");
+        $stmt->execute([':texto' => "%$texto%"]);
+        return $stmt->fetchAll();
     }
 
-    public function insertar($Nombres, $Direccion, $Telefono, $Cedula, $Correo) // insert into clientes (nombres, direccion, telefono, cedula, correo) values ($nombres, $direccion, $telefono, $cedula, $correo)
+    public function todos()
+    {
+        $stmt = $this->db->query("SELECT * FROM Clientes");
+        return $stmt->fetchAll();
+    }
+
+    public function uno($idClientes)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM Clientes WHERE idClientes = :id");
+        $stmt->execute([':id' => $idClientes]);
+        return $stmt->fetch();
+    }
+
+    public function insertar($Nombres, $Direccion, $Telefono, $Cedula, $Correo)
     {
         try {
-            $con = new ClaseConectar();
-            $con = $con->ProcedimientoParaConectar();
-            $cadena = "INSERT INTO `clientes`(`Nombres`, `Direccion`, `Telefono`, `Cedula`, `Correo`) 
-                       VALUES ('$Nombres', '$Direccion', '$Telefono', '$Cedula', '$Correo')";
-            if (mysqli_query($con, $cadena)) {
-                return $con->insert_id; // Return the inserted ID
-            } else {
-                return $con->error;
-            }
-        } catch (Exception $th) {
-            return $th->getMessage();
-        } finally {
-            $con->close();
+            $stmt = $this->db->prepare("INSERT INTO Clientes (Nombres, Direccion, Telefono, Cedula, Correo) VALUES (:nombres, :direccion, :telefono, :cedula, :correo)");
+            $result = $stmt->execute([
+                ':nombres' => $Nombres,
+                ':direccion' => $Direccion,
+                ':telefono' => $Telefono,
+                ':cedula' => $Cedula,
+                ':correo' => $Correo
+            ]);
+            return $result ? $this->db->lastInsertId() : false;
+        } catch (PDOException $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
-    public function actualizar($idClientes, $Nombres, $Direccion, $Telefono, $Cedula, $Correo) // update clientes set nombres = $nombres, direccion = $direccion, telefono = $telefono, cedula = $cedula, correo = $correo where id = $idClientes
+    public function actualizar($idClientes, $Nombres, $Direccion, $Telefono, $Cedula, $Correo)
     {
         try {
-            $con = new ClaseConectar();
-            $con = $con->ProcedimientoParaConectar();
-            $cadena = "UPDATE `clientes` SET 
-                       `Nombres`='$Nombres',
-                       `Direccion`='$Direccion',
-                       `Telefono`='$Telefono',
-                       `Cedula`='$Cedula',
-                       `Correo`='$Correo' 
-                       WHERE `idClientes` = $idClientes";
-            if (mysqli_query($con, $cadena)) {
-                return $idClientes; // Return the updated ID
-            } else {
-                return $con->error;
-            }
-        } catch (Exception $th) {
-            return $th->getMessage();
-        } finally {
-            $con->close();
+            $stmt = $this->db->prepare("UPDATE Clientes SET Nombres = :nombres, Direccion = :direccion, Telefono = :telefono, Cedula = :cedula, Correo = :correo WHERE idClientes = :id");
+            $result = $stmt->execute([
+                ':id' => $idClientes,
+                ':nombres' => $Nombres,
+                ':direccion' => $Direccion,
+                ':telefono' => $Telefono,
+                ':cedula' => $Cedula,
+                ':correo' => $Correo
+            ]);
+            return $result ? $idClientes : false;
+        } catch (PDOException $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
-    public function eliminar($idClientes) // delete from clientes where id = $idClientes
+    public function eliminar($idClientes)
     {
         try {
-            $con = new ClaseConectar();
-            $con = $con->ProcedimientoParaConectar();
-            $cadena = "DELETE FROM `clientes` WHERE `idClientes`= $idClientes";
-            if (mysqli_query($con, $cadena)) {
-                return 1; // Success
-            } else {
-                return $con->error;
-            }
-        } catch (Exception $th) {
-            return $th->getMessage();
-        } finally {
-            $con->close();
+            $stmt = $this->db->prepare("DELETE FROM Clientes WHERE idClientes = :id");
+            return $stmt->execute([':id' => $idClientes]);
+        } catch (PDOException $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 }

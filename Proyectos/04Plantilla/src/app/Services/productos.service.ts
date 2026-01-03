@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IProducto } from '../Interfaces/iproducto'; // Asegúrate de crear esta interfaz
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
-  apiurl = 'http://localhost/sexto/Proyectos/03MVC/controllers/productos.controller.php?op=';
+  apiurl = environment.apiUrl + 'productos.controller.php?op=';
 
   constructor(private http: HttpClient) {}
 
