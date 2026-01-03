@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+build/
+.angular/
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# PHP specific
+*.cache
+/Proyectos/03MVC/database/*.db-journal
+
+# Angular specific
+.angular/cache/
+
+# Package manager locks (keep only one)
+# package-lock.json
+# yarn.lock
+
+# Compiled output
+*.js.map
+*.d.ts
+
+# Test results
+test-results/
+playwright-report/
