@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IUnidadMedida } from '../Interfaces/iunidadmedida';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UnidadmedidaService {
-  apiurl = 'http://localhost/sexto/Proyectos/03MVC/controllers/unidadmedida.controller.php?op=';
+  apiurl = environment.apiUrl + 'unidadmedida.controller.php?op=';
 
   constructor(private lector: HttpClient) {}
 

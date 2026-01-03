@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IFactura } from '../Interfaces/factura';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FacturaService {
-  apiurl = 'http://localhost/sexto/Proyectos/03MVC/controllers/factura.controller.php?op=';
+  apiurl = environment.apiUrl + 'factura.controller.php?op=';
 
   constructor(private lector: HttpClient) {}
 

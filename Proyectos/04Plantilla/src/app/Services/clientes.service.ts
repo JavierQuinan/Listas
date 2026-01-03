@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 
 import { ICliente } from '../Interfaces/icliente';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientesService {
-  apiurl = 'http://localhost/sexto/Proyectos/03MVC/controllers/clientes.controller.php?op=';
+  apiurl = environment.apiUrl + 'clientes.controller.php?op=';
   constructor(private lector: HttpClient) {}
 
   buscar(texto: string): Observable<ICliente> {

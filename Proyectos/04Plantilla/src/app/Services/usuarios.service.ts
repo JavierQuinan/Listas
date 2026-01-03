@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { IUsuarios } from '../Interfaces/IUsuarios';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
   private loggedIn = new BehaviorSubject<boolean>(false);
-  apiurl = 'http://localhost/sexto/Proyectos/03MVC/controllers/usuarios.controller.php?op=';
+  apiurl = environment.apiUrl + 'usuarios.controller.php?op=';
   constructor(
     private lector: HttpClient,
     private navegacion: Router
