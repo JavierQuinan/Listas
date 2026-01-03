@@ -315,7 +315,7 @@ Las contribuciones son bienvenidas.
 | Información |
 |-------------|
 | Proyecto Académico |
-| 2025 - 2026 |
+| 2023 - 2026 (Mejoras) |
 
 ---
 
