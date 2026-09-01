@@ -48,8 +48,9 @@ tmp/
 temp/
 *.tmp
 
-# PHP specific
+# PHP / generated local database
 *.cache
+/Proyectos/03MVC/database/*.db
 /Proyectos/03MVC/database/*.db-journal
 
 # Angular specific
