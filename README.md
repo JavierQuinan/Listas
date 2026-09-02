@@ -1,6 +1,6 @@
 # Billing & Inventory System — Angular + PHP
 
-> **Portfolio evidence:** Angular 18 frontend · PHP MVC-style backend · SQLite · authentication hardening · reproducible database bootstrap · automated quality checks.
+> **Portfolio evidence:** Angular 18 frontend · PHP MVC-style backend · SQLite · authentication hardening · reproducible database bootstrap · observed GitHub Actions quality checks.
 >
 > This repository is presented as an academic full-stack engineering artifact, not as production-ready enterprise software.
 
@@ -19,7 +19,7 @@ The repository contains a working multi-part billing/inventory codebase with:
 - configurable CORS allowlist;
 - automated authentication smoke checks;
 - GitHub Actions quality workflow;
-- Angular production-build verification in CI.
+- observed Angular production-build verification in CI.
 
 ## Architecture
 
@@ -100,26 +100,33 @@ The smoke test checks that:
 5. the stored password is not plaintext;
 6. the stored hash validates through `password_verify()`.
 
-## Automated quality workflow
+## Automated quality evidence
 
-`.github/workflows/portfolio-quality.yml` defines two independent CI jobs:
+`.github/workflows/portfolio-quality.yml` defines two independent CI jobs and has been observed successfully on the hardening pull request.
 
 ### PHP / SQLite security baseline
 
-- verifies PHP + SQLite support;
-- syntax-checks PHP source files;
-- recreates the SQLite database from versioned schema/seed files;
-- creates an ephemeral CI administrator through environment variables;
-- executes the authentication smoke test;
-- removes the generated database after the check.
+Observed CI checks:
 
-### Angular 18 build
+- PHP + SQLite support;
+- PHP syntax validation;
+- SQLite recreation from versioned schema/seed files;
+- ephemeral CI administrator created from environment variables;
+- authentication smoke test;
+- generated database cleanup.
+
+### Angular 18 production build
+
+The CI job uses the versioned pnpm lockfile:
 
 ```bash
 cd Proyectos/04Plantilla
-npm ci
-npm run build -- --configuration production
+corepack enable
+pnpm install --frozen-lockfile
+pnpm exec ng build --configuration production
 ```
+
+Observed result: the production build completed successfully on Node 22 after deterministic dependency installation.
 
 The workflow uses read-only repository permissions (`contents: read`).
 
@@ -170,7 +177,7 @@ See the main [GitHub profile](https://github.com/JavierQuinan) and [Portfolio Go
 
 ## Resumen en español
 
-Proyecto académico full stack con **Angular 18 + PHP + SQLite**, que demuestra CRUD de clientes/productos/proveedores/facturación, autenticación con `password_hash/password_verify`, CORS por allowlist, inicialización reproducible de SQLite, creación segura de usuario local mediante variables de entorno y smoke tests de autenticación. La interfaz administrativa utiliza como base Mantis Free Angular Admin Template de CodedThemes y mantiene su atribución.
+Proyecto académico full stack con **Angular 18 + PHP + SQLite** que demuestra CRUD de clientes/productos/proveedores/facturación, autenticación con `password_hash/password_verify`, CORS por allowlist, inicialización reproducible de SQLite, creación segura de usuario local mediante variables de entorno y smoke tests de autenticación. GitHub Actions verificó exitosamente el baseline PHP/SQLite/autenticación y el build de producción de Angular. La interfaz administrativa utiliza como base Mantis Free Angular Admin Template de CodedThemes y mantiene su atribución.
 
 ## License
 
