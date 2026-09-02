@@ -63,12 +63,16 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: Proyectos/04Plantilla/package-lock.json
+          node-version: 22
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Enable pnpm through Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+          pnpm --version
+
+      - name: Install dependencies from lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Production build
-        run: npm run build -- --configuration production
+        run: pnpm run build -- --configuration production
