@@ -1,6 +1,6 @@
 # Sistema de Facturación e Inventario — Angular + PHP
 
-> **Repository status:** hardening candidate / academic engineering evidence. The repository contains substantial working code, but it is **not yet presented as production-ready portfolio software**.
+> **Repository status:** portfolio evidence / academic full-stack system. The repository demonstrates real Angular + PHP + SQLite implementation and has completed its first security-hardening gate. It is **not presented as production-ready enterprise software**.
 
 ## Verified engineering scope
 
@@ -16,7 +16,7 @@ The repository contains a multi-part academic system with:
 
 ## Important attribution
 
-The Angular admin frontend under `Proyectos/04Plantilla` is based on the **Mantis Free Angular Admin Template** by **CodedThemes** and retains its MIT license metadata. The template foundation is third-party work; repository-specific application/domain changes must not be represented as an entirely original UI framework.
+The Angular admin frontend under `Proyectos/04Plantilla` is based on the **Mantis Free Angular Admin Template** by **CodedThemes** and retains its MIT license metadata. The template foundation is third-party work; repository-specific application/domain changes are not represented as an entirely original UI framework.
 
 ## Architecture snapshot
 
@@ -24,6 +24,8 @@ The Angular admin frontend under `Proyectos/04Plantilla` is based on the **Manti
 Proyectos/
 ├── 03MVC/
 │   ├── config/
+│   │   ├── config.php
+│   │   └── http.php
 │   ├── controllers/
 │   ├── models/
 │   ├── database/
@@ -56,27 +58,37 @@ The current PHP controller layer includes:
 
 These controllers are evidence of CRUD/domain implementation, not a claim of a hardened enterprise API.
 
-## Security status
+## Security hardening completed
 
-This repository is **not ready for promotion to first-line portfolio evidence** because the current authentication implementation stores and compares passwords as plain text, and controller-level CORS is permissive (`*`). The seed also includes a development-only default user credential.
+The first blocking security findings have been remediated:
 
-Before promotion, the project should at minimum:
+- user passwords are hashed with `password_hash()` and verified with `password_verify()`
+- user list/detail/login responses do not expose the stored password hash
+- the development admin seed stores a bcrypt hash instead of a plaintext password
+- login rejects invalid credentials with HTTP 401
+- minimum password validation is applied by the user controller
+- wildcard CORS headers were removed from all seven PHP controllers
+- CORS is centralized in `config/http.php`
+- allowed origins are configurable through `APP_ALLOWED_ORIGINS`, with local-development defaults only
 
-1. migrate password storage to `password_hash()` / `password_verify()`
-2. invalidate the plaintext seed credential pattern
-3. restrict CORS by environment
-4. add explicit authorization/role enforcement
-5. add automated backend and integration tests
-6. verify Angular tests/build from a clean checkout
-7. review all API error handling and input validation
-8. document third-party template customization boundaries
+## Remaining engineering debt
+
+Promotion to `PORTFOLIO EVIDENCE` does not mean production readiness. The next hardening gate should include:
+
+1. automated PHP/integration tests for auth and CRUD flows
+2. Angular build/test verification in CI
+3. explicit session/token authorization rather than treating authentication alone as authorization
+4. role/permission enforcement per operation
+5. stronger request validation and consistent HTTP status/error contracts
+6. CSRF/session review if browser-cookie authentication is introduced
+7. dependency and template-license review from a clean checkout
 
 ## Portfolio classification
 
 **Category:** Angular + PHP full-stack academic evidence  
-**Current classification:** HARDENING CANDIDATE  
-**Portfolio priority:** Medium after remediation  
-**Pinned repository:** No, until the hardening gate is satisfied
+**Current classification:** PORTFOLIO EVIDENCE  
+**Portfolio priority:** Supporting evidence  
+**Pinned repository:** Not currently; stronger SaaS/AI repositories remain first-line
 
 This repository is intentionally documented with its limitations rather than overstating completeness or production readiness.
 
