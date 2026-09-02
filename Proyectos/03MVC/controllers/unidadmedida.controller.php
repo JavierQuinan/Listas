@@ -3,16 +3,8 @@
  * Controlador de Unidad de Medida - PDO/SQLite
  * Sistema de Facturación
  */
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-header("Content-Type: application/json; charset=UTF-8");
-header("Allow: GET, POST, OPTIONS, PUT, DELETE");
-
-$method = $_SERVER["REQUEST_METHOD"];
-if ($method == "OPTIONS") {
-    die();
-}
+require_once(__DIR__ . '/../config/http.php');
+applyJsonCors();
 
 require_once('../models/unidadmedida.model.php');
 
@@ -42,7 +34,7 @@ switch ($op) {
         }
         $Detalle = isset($_POST["Detalle"]) ? trim($_POST["Detalle"]) : trim($_POST["Descripcion"]);
         $Tipo = isset($_POST["Tipo"]) ? trim($_POST["Tipo"]) : '';
-        
+
         $datos = $unidad->insertar($Detalle, $Tipo);
         echo json_encode($datos);
         break;
@@ -59,7 +51,7 @@ switch ($op) {
         $idUnidad = isset($_POST["idUnidad"]) ? intval($_POST["idUnidad"]) : intval($_POST["idUnidad_Medida"]);
         $Detalle = isset($_POST["Detalle"]) ? trim($_POST["Detalle"]) : trim($_POST["Descripcion"]);
         $Tipo = isset($_POST["Tipo"]) ? trim($_POST["Tipo"]) : '';
-        
+
         $datos = $unidad->actualizar($idUnidad, $Detalle, $Tipo);
         echo json_encode($datos);
         break;

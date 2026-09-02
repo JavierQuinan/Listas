@@ -13,23 +13,34 @@ class UsuariosModel
 
     public function todos()
     {
-        $stmt = $this->db->query("SELECT * FROM Usuarios");
+        $stmt = $this->db->query(
+            "SELECT idUsuarios, Nombre_Usuario, Estado, Roles_idRoles FROM Usuarios"
+        );
         return $stmt->fetchAll();
     }
 
     public function uno($idUsuarios)
     {
-        $stmt = $this->db->prepare("SELECT * FROM Usuarios WHERE idUsuarios = :id");
+        $stmt = $this->db->prepare(
+            "SELECT idUsuarios, Nombre_Usuario, Estado, Roles_idRoles FROM Usuarios WHERE idUsuarios = :id"
+        );
         $stmt->execute([':id' => $idUsuarios]);
         return $stmt->fetch();
     }
 
     public function insertar($Nombre_Usuario, $Contrasenia, $Estado, $Roles_idRoles)
     {
-        $stmt = $this->db->prepare("INSERT INTO Usuarios (Nombre_Usuario, Contrasenia, Estado, Roles_idRoles) VALUES (:nombre, :pass, :estado, :rol)");
+        $passwordHash = password_hash($Contrasenia, PASSWORD_DEFAULT);
+        if ($passwordHash === false) {
+            throw new RuntimeException('No fue posible proteger la contraseña.');
+        }
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO Usuarios (Nombre_Usuario, Contrasenia, Estado, Roles_idRoles) VALUES (:nombre, :pass, :estado, :rol)"
+        );
         return $stmt->execute([
             ':nombre' => $Nombre_Usuario,
-            ':pass' => $Contrasenia,
+            ':pass' => $passwordHash,
             ':estado' => $Estado,
             ':rol' => $Roles_idRoles
         ]);
@@ -37,11 +48,18 @@ class UsuariosModel
 
     public function actualizar($idUsuarios, $Nombre_Usuario, $Contrasenia, $Estado, $Roles_idRoles)
     {
-        $stmt = $this->db->prepare("UPDATE Usuarios SET Nombre_Usuario = :nombre, Contrasenia = :pass, Estado = :estado, Roles_idRoles = :rol WHERE idUsuarios = :id");
+        $passwordHash = password_hash($Contrasenia, PASSWORD_DEFAULT);
+        if ($passwordHash === false) {
+            throw new RuntimeException('No fue posible proteger la contraseña.');
+        }
+
+        $stmt = $this->db->prepare(
+            "UPDATE Usuarios SET Nombre_Usuario = :nombre, Contrasenia = :pass, Estado = :estado, Roles_idRoles = :rol WHERE idUsuarios = :id"
+        );
         return $stmt->execute([
             ':id' => $idUsuarios,
             ':nombre' => $Nombre_Usuario,
-            ':pass' => $Contrasenia,
+            ':pass' => $passwordHash,
             ':estado' => $Estado,
             ':rol' => $Roles_idRoles
         ]);
@@ -55,13 +73,17 @@ class UsuariosModel
 
     public function login($Nombre_Usuario, $Contrasenia)
     {
-        $stmt = $this->db->prepare("SELECT * FROM Usuarios WHERE Nombre_Usuario = :nombre AND Estado = 1");
+        $stmt = $this->db->prepare(
+            "SELECT idUsuarios, Nombre_Usuario, Contrasenia, Estado, Roles_idRoles FROM Usuarios WHERE Nombre_Usuario = :nombre AND Estado = 1"
+        );
         $stmt->execute([':nombre' => $Nombre_Usuario]);
         $usuario = $stmt->fetch();
-        
-        if ($usuario && $Contrasenia === $usuario['Contrasenia']) {
-            return $usuario;
+
+        if (!$usuario || !password_verify($Contrasenia, $usuario['Contrasenia'])) {
+            return false;
         }
-        return false;
+
+        unset($usuario['Contrasenia']);
+        return $usuario;
     }
 }
