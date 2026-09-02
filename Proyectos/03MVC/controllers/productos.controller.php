@@ -3,16 +3,8 @@
  * Controlador de Productos - PDO/SQLite
  * Sistema de Facturación
  */
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-header("Content-Type: application/json; charset=UTF-8");
-header("Allow: GET, POST, OPTIONS, PUT, DELETE");
-
-$method = $_SERVER["REQUEST_METHOD"];
-if ($method == "OPTIONS") {
-    die();
-}
+require_once(__DIR__ . '/../config/http.php');
+applyJsonCors();
 
 require_once('../models/productos.model.php');
 
@@ -54,7 +46,7 @@ switch ($op) {
         $Valor_Compra = isset($_POST["Valor_Compra"]) ? floatval($_POST["Valor_Compra"]) : 0;
         $Valor_Venta = isset($_POST["Valor_Venta"]) ? floatval($_POST["Valor_Venta"]) : 0;
         $Proveedor_id = isset($_POST["Proveedores_idProveedores"]) ? intval($_POST["Proveedores_idProveedores"]) : 1;
-        
+
         $datos = $producto->insertar($Codigo_Barras, $Nombre_Producto, $Graba_IVA, $Unidad_Medida_id, $IVA_id, $Cantidad, $Valor_Compra, $Valor_Venta, $Proveedor_id);
         echo json_encode($datos);
         break;
@@ -68,7 +60,7 @@ switch ($op) {
         $Codigo_Barras = trim($_POST["Codigo_Barras"]);
         $Nombre_Producto = trim($_POST["Nombre_Producto"]);
         $Graba_IVA = isset($_POST["Graba_IVA"]) ? intval($_POST["Graba_IVA"]) : 1;
-        
+
         $datos = $producto->actualizar($idProductos, $Codigo_Barras, $Nombre_Producto, $Graba_IVA);
         echo json_encode($datos);
         break;
