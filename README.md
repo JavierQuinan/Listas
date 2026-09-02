@@ -1,99 +1,184 @@
-# Sistema de Facturación e Inventario — Angular + PHP
+# Billing & Inventory System — Angular + PHP
 
-> **Repository status:** portfolio evidence / academic full-stack system. The repository demonstrates real Angular + PHP + SQLite implementation and has completed its first security-hardening gate. It is **not presented as production-ready enterprise software**.
+> **Portfolio evidence:** Angular 18 frontend · PHP MVC-style backend · SQLite · authentication hardening · reproducible database bootstrap · observed GitHub Actions quality checks.
+>
+> This repository is presented as an academic full-stack engineering artifact, not as production-ready enterprise software.
 
-## Verified engineering scope
+## What is implemented
 
-The repository contains a multi-part academic system with:
+The repository contains a working multi-part billing/inventory codebase with:
 
-- Angular 18 frontend code
-- PHP MVC-style backend
-- SQLite persistence
-- controllers for clients, invoices, VAT, products, suppliers, units of measure and users
-- schema + seed scripts
-- reproducible SQLite initialization through `Proyectos/03MVC/database/init_db.php`
-- frontend dependencies for Bootstrap, ApexCharts, PDF generation and related UI functionality
+- Angular 18 frontend code;
+- PHP MVC-style backend;
+- SQLite persistence through PDO;
+- CRUD/domain controllers for clients, invoices, VAT, products, suppliers, units of measure and users;
+- schema and synthetic seed data;
+- reproducible SQLite initialization;
+- PDF/reporting utilities;
+- authentication with hashed passwords;
+- configurable CORS allowlist;
+- automated authentication smoke checks;
+- GitHub Actions quality workflow;
+- observed Angular production-build verification in CI.
 
-## Important attribution
-
-The Angular admin frontend under `Proyectos/04Plantilla` is based on the **Mantis Free Angular Admin Template** by **CodedThemes** and retains its MIT license metadata. The template foundation is third-party work; repository-specific application/domain changes are not represented as an entirely original UI framework.
-
-## Architecture snapshot
+## Architecture
 
 ```text
 Proyectos/
 ├── 03MVC/
 │   ├── config/
-│   │   ├── config.php
-│   │   └── http.php
+│   │   ├── config.php        # PDO / SQLite connection
+│   │   └── http.php          # JSON + CORS policy
 │   ├── controllers/
 │   ├── models/
 │   ├── database/
 │   │   ├── schema.sql
 │   │   ├── seed.sql
-│   │   └── init_db.php
-│   └── tienda/
+│   │   ├── init_db.php
+│   │   └── create_local_admin.php
+│   └── tests/
+│       └── auth_smoke.php
 └── 04Plantilla/
-    └── Angular 18 admin frontend (Mantis/CodedThemes base)
+    └── Angular 18 administration frontend
 ```
 
-The generated `facturacion.db` file is intentionally not versioned. The database is recreated from `schema.sql` and `seed.sql`:
+The generated `facturacion.db` file is not versioned. It is recreated from `schema.sql` and `seed.sql`.
+
+## Security controls present
+
+The current source includes these concrete controls:
+
+- `password_hash()` for password storage;
+- `password_verify()` for login validation;
+- password hashes excluded from user list/detail/login responses;
+- invalid login returns HTTP `401`;
+- minimum password validation in the user controller;
+- `Usuarios.Nombre_Usuario` is unique in the generated SQLite schema;
+- no known/default administrator password is stored in `seed.sql`;
+- local administrator creation requires `DEMO_ADMIN_PASSWORD` from the environment;
+- wildcard CORS is not used;
+- allowed origins are centralized in `config/http.php` and configured with `APP_ALLOWED_ORIGINS`;
+- generated database files remain outside version control.
+
+### Local administrator bootstrap
+
+After initializing the database, create a local administrator without committing credentials:
 
 ```bash
 cd Proyectos/03MVC/database
 php init_db.php
+DEMO_ADMIN_PASSWORD='choose-a-local-password-at-least-12-chars' php create_local_admin.php
 ```
 
-## Verified backend domains
+Optional username:
 
-The current PHP controller layer includes:
+```bash
+DEMO_ADMIN_USERNAME='local-admin' \
+DEMO_ADMIN_PASSWORD='choose-a-local-password-at-least-12-chars' \
+php create_local_admin.php
+```
 
-- clients
-- invoices
-- VAT
-- products
-- suppliers
-- units of measure
-- users
+## Reproducible authentication checks
 
-These controllers are evidence of CRUD/domain implementation, not a claim of a hardened enterprise API.
+The repository contains `Proyectos/03MVC/tests/auth_smoke.php`.
 
-## Security hardening completed
+With a local administrator already created:
 
-The first blocking security findings have been remediated:
+```bash
+cd Proyectos/03MVC
+DEMO_ADMIN_USERNAME='local-admin' \
+DEMO_ADMIN_PASSWORD='choose-a-local-password-at-least-12-chars' \
+php tests/auth_smoke.php
+```
 
-- user passwords are hashed with `password_hash()` and verified with `password_verify()`
-- user list/detail/login responses do not expose the stored password hash
-- the development admin seed stores a bcrypt hash instead of a plaintext password
-- login rejects invalid credentials with HTTP 401
-- minimum password validation is applied by the user controller
-- wildcard CORS headers were removed from all seven PHP controllers
-- CORS is centralized in `config/http.php`
-- allowed origins are configurable through `APP_ALLOWED_ORIGINS`, with local-development defaults only
+The smoke test checks that:
 
-## Remaining engineering debt
+1. valid credentials authenticate;
+2. invalid credentials are rejected;
+3. login output does not expose the stored hash;
+4. user list/detail responses do not expose the stored hash;
+5. the stored password is not plaintext;
+6. the stored hash validates through `password_verify()`.
 
-Promotion to `PORTFOLIO EVIDENCE` does not mean production readiness. The next hardening gate should include:
+## Automated quality evidence
 
-1. automated PHP/integration tests for auth and CRUD flows
-2. Angular build/test verification in CI
-3. explicit session/token authorization rather than treating authentication alone as authorization
-4. role/permission enforcement per operation
-5. stronger request validation and consistent HTTP status/error contracts
-6. CSRF/session review if browser-cookie authentication is introduced
-7. dependency and template-license review from a clean checkout
+`.github/workflows/portfolio-quality.yml` defines two independent CI jobs and has been observed successfully on the hardening pull request.
+
+### PHP / SQLite security baseline
+
+Observed CI checks:
+
+- PHP + SQLite support;
+- PHP syntax validation;
+- SQLite recreation from versioned schema/seed files;
+- ephemeral CI administrator created from environment variables;
+- authentication smoke test;
+- generated database cleanup.
+
+### Angular 18 production build
+
+The CI job uses the versioned pnpm lockfile:
+
+```bash
+cd Proyectos/04Plantilla
+corepack enable
+pnpm install --frozen-lockfile
+pnpm exec ng build --configuration production
+```
+
+Observed result: the production build completed successfully on Node 22 after deterministic dependency installation.
+
+The workflow uses read-only repository permissions (`contents: read`).
+
+## Functional domains represented
+
+The PHP layer includes code for:
+
+- clients;
+- invoices;
+- VAT;
+- products;
+- suppliers;
+- units of measure;
+- users/authentication.
+
+The Angular application provides the administrative UI used by the academic billing/inventory workflow.
+
+## Third-party attribution
+
+The Angular admin frontend under `Proyectos/04Plantilla` is based on the **Mantis Free Angular Admin Template** by **CodedThemes** and retains its MIT-license metadata.
+
+The template foundation is third-party work. Repository-specific business/domain changes are therefore not represented as an entirely original UI framework.
+
+The repository also contains third-party libraries such as FPDF; their original copyright/license conditions remain applicable.
+
+## Current technical boundary
+
+The repository demonstrates authentication, CRUD/domain code, database initialization and frontend integration, but it does **not** claim:
+
+- production deployment or production security audit;
+- complete authorization/RBAC enforcement on every backend operation;
+- a uniform enterprise-grade API error contract across all historical controllers;
+- CSRF protection for a cookie-session architecture (the current evidence does not present such an architecture);
+- complete integration-test coverage for every CRUD domain;
+- that the Mantis UI foundation is original work.
+
+These are boundaries of the current artifact, not advertised future features.
 
 ## Portfolio classification
 
 **Category:** Angular + PHP full-stack academic evidence  
-**Current classification:** PORTFOLIO EVIDENCE  
-**Portfolio priority:** Supporting evidence  
-**Pinned repository:** Not currently; stronger SaaS/AI repositories remain first-line
+**Classification:** `PORTFOLIO EVIDENCE`  
+**Role:** supporting full-stack evidence
 
-This repository is intentionally documented with its limitations rather than overstating completeness or production readiness.
+The repository is intentionally documented around verifiable source and reproducible checks rather than inflated completeness claims.
 
 See the main [GitHub profile](https://github.com/JavierQuinan) and [Portfolio Governance](https://github.com/JavierQuinan/JavierQuinan/blob/main/docs/PORTFOLIO_GOVERNANCE.md).
 
+## Resumen en español
+
+Proyecto académico full stack con **Angular 18 + PHP + SQLite** que demuestra CRUD de clientes/productos/proveedores/facturación, autenticación con `password_hash/password_verify`, CORS por allowlist, inicialización reproducible de SQLite, creación segura de usuario local mediante variables de entorno y smoke tests de autenticación. GitHub Actions verificó exitosamente el baseline PHP/SQLite/autenticación y el build de producción de Angular. La interfaz administrativa utiliza como base Mantis Free Angular Admin Template de CodedThemes y mantiene su atribución.
+
 ## License
 
-The repository includes MIT-licensed material. Third-party components retain their respective licenses and attribution requirements.
+This repository includes MIT-licensed material. Third-party components retain their respective licenses and attribution requirements.

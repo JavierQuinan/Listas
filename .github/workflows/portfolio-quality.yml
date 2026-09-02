@@ -1,0 +1,78 @@
+name: Portfolio Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  php-backend:
+    name: PHP / SQLite security baseline
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Proyectos/03MVC
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify PHP and SQLite support
+        run: |
+          php -v
+          php -m | grep -qiE 'pdo_sqlite|sqlite3'
+
+      - name: PHP syntax check
+        run: |
+          find config controllers models database tests -type f -name '*.php' -print0 \
+            | xargs -0 -n1 php -l
+
+      - name: Recreate SQLite database
+        run: |
+          rm -f database/facturacion.db
+          php database/init_db.php
+
+      - name: Create local CI admin without committed password
+        env:
+          DEMO_ADMIN_USERNAME: ci-admin
+          DEMO_ADMIN_PASSWORD: CI-Only-Password-2026!
+        run: php database/create_local_admin.php
+
+      - name: Authentication smoke test
+        env:
+          DEMO_ADMIN_USERNAME: ci-admin
+          DEMO_ADMIN_PASSWORD: CI-Only-Password-2026!
+        run: php tests/auth_smoke.php
+
+      - name: Ensure generated database is not committed by the job
+        if: always()
+        run: rm -f database/facturacion.db
+
+  angular-build:
+    name: Angular 18 build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Proyectos/04Plantilla
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm through Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+          pnpm --version
+
+      - name: Install dependencies from lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: Production build
+        run: pnpm exec ng build --configuration production

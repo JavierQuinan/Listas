@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS Roles (
 -- Tabla Usuarios
 CREATE TABLE IF NOT EXISTS Usuarios (
     idUsuarios INTEGER PRIMARY KEY AUTOINCREMENT,
-    Nombre_Usuario VARCHAR(45) NOT NULL,
+    Nombre_Usuario VARCHAR(45) NOT NULL UNIQUE,
     Contrasenia VARCHAR(255) NOT NULL,
     Estado INTEGER NOT NULL DEFAULT 1,
     Roles_idRoles INTEGER NOT NULL,
