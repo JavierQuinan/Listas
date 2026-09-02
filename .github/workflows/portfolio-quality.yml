@@ -75,4 +75,4 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Production build
-        run: pnpm run build -- --configuration production
+        run: pnpm exec ng build --configuration production
