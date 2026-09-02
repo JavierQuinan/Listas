@@ -3,16 +3,8 @@
  * Controlador de Facturas - PDO/SQLite
  * Sistema de Facturación
  */
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-header("Content-Type: application/json; charset=UTF-8");
-header("Allow: GET, POST, OPTIONS, PUT, DELETE");
-
-$method = $_SERVER["REQUEST_METHOD"];
-if ($method == "OPTIONS") {
-    die();
-}
+require_once(__DIR__ . '/../config/http.php');
+applyJsonCors();
 
 require_once('../models/factura.model.php');
 
@@ -55,7 +47,7 @@ switch ($op) {
         $Sub_total_iva = isset($_POST["Sub_total_iva"]) ? floatval($_POST["Sub_total_iva"]) : 0;
         $Valor_IVA = isset($_POST["Valor_IVA"]) ? floatval($_POST["Valor_IVA"]) : 0;
         $Clientes_idClientes = intval($_POST["Clientes_idClientes"]);
-        
+
         $datos = $factura->insertar($Fecha, $Sub_total, $Sub_total_iva, $Valor_IVA, $Clientes_idClientes);
         echo json_encode($datos);
         break;
@@ -70,7 +62,7 @@ switch ($op) {
         $Cantidad = floatval($_POST["Cantidad"]);
         $Precio_Unitario = isset($_POST["Precio_Unitario"]) ? floatval($_POST["Precio_Unitario"]) : 0;
         $Sub_Total_item = isset($_POST["Sub_Total_item"]) ? floatval($_POST["Sub_Total_item"]) : ($Cantidad * $Precio_Unitario);
-        
+
         $datos = $factura->insertarDetalle($Factura_idFactura, $Kardex_idKardex, $Cantidad, $Precio_Unitario, $Sub_Total_item);
         echo json_encode($datos);
         break;
@@ -86,7 +78,7 @@ switch ($op) {
         $Sub_total_iva = isset($_POST["Sub_total_iva"]) ? floatval($_POST["Sub_total_iva"]) : 0;
         $Valor_IVA = isset($_POST["Valor_IVA"]) ? floatval($_POST["Valor_IVA"]) : 0;
         $Clientes_idClientes = intval($_POST["Clientes_idClientes"]);
-        
+
         $datos = $factura->actualizar($idFactura, $Fecha, $Sub_total, $Sub_total_iva, $Valor_IVA, $Clientes_idClientes);
         echo json_encode($datos);
         break;
