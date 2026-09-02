@@ -5,11 +5,9 @@ INSERT INTO Roles (Detalle) VALUES ('Administrador');
 INSERT INTO Roles (Detalle) VALUES ('Vendedor');
 INSERT INTO Roles (Detalle) VALUES ('Cajero');
 
--- Usuario administrador de desarrollo.
--- Password de demo: admin123
--- El valor almacenado es un hash bcrypt compatible con password_verify().
-INSERT INTO Usuarios (Nombre_Usuario, Contrasenia, Estado, Roles_idRoles)
-VALUES ('admin', '$2y$12$yiNU/ac5u4pTZtaoKkZirOlDBpu0mqufv02daGrvkPKquVtWxXuM6', 1, 1);
+-- No se versiona ninguna contraseña conocida.
+-- Cree un usuario local con database/create_local_admin.php y una contraseña
+-- proporcionada mediante la variable de entorno DEMO_ADMIN_PASSWORD.
 
 -- Configuración de IVA
 INSERT INTO IVA (Detalle, Estado, Valor) VALUES ('0%', 1, 0);
@@ -25,26 +23,26 @@ INSERT INTO Unidad_Medida (Detalle, Tipo) VALUES ('Gramo', 1);
 INSERT INTO Unidad_Medida (Detalle, Tipo) VALUES ('Litro', 1);
 INSERT INTO Unidad_Medida (Detalle, Tipo) VALUES ('Mililitro', 1);
 
--- Proveedores de ejemplo
+-- Proveedores de ejemplo (datos sintéticos)
 INSERT INTO Proveedores (Nombre_Empresa, Direccion, Telefono, Contacto_Empresa, Telefono_Contacto)
-VALUES ('Distribuidora ABC', 'Av. Principal 123', '0991234567', 'Juan Pérez', '0987654321');
+VALUES ('Distribuidora Demo Uno', 'Dirección de prueba 100', '0990000001', 'Contacto Demo', '0980000001');
 
 INSERT INTO Proveedores (Nombre_Empresa, Direccion, Telefono, Contacto_Empresa, Telefono_Contacto)
-VALUES ('Mayorista XYZ', 'Calle Comercio 456', '0992345678', 'María García', '0998765432');
+VALUES ('Mayorista Demo Dos', 'Dirección de prueba 200', '0990000002', 'Contacto Demo', '0980000002');
 
--- Productos de ejemplo
+-- Productos de ejemplo (datos sintéticos)
 INSERT INTO Productos (Codigo_Barras, Nombre_Producto, Graba_IVA)
-VALUES ('7501234567890', 'Arroz Premium 1kg', 1);
-
-INSERT INTO Productos (Codigo_Barras, Nombre_Producto, Graba_IVA)
-VALUES ('7501234567891', 'Aceite Vegetal 1L', 1);
+VALUES ('7500000000001', 'Producto Demo A', 1);
 
 INSERT INTO Productos (Codigo_Barras, Nombre_Producto, Graba_IVA)
-VALUES ('7501234567892', 'Azúcar Refinada 1kg', 0);
+VALUES ('7500000000002', 'Producto Demo B', 1);
 
--- Clientes de ejemplo
+INSERT INTO Productos (Codigo_Barras, Nombre_Producto, Graba_IVA)
+VALUES ('7500000000003', 'Producto Demo C', 0);
+
+-- Clientes de ejemplo (datos sintéticos)
 INSERT INTO Clientes (Nombres, Direccion, Telefono, Cedula, Correo)
-VALUES ('Consumidor Final', 'N/A', '0000000000', '9999999999', 'consumidor@final.com');
+VALUES ('Consumidor Demo', 'N/A', '0000000000', '9999999999', 'demo@example.test');
 
 INSERT INTO Clientes (Nombres, Direccion, Telefono, Cedula, Correo)
-VALUES ('Carlos Rodríguez', 'Av. Los Álamos 789', '0993456789', '1234567890', 'carlos@email.com');
+VALUES ('Cliente de Prueba', 'Dirección de prueba 300', '0990000003', '0000000001', 'cliente@example.test');
