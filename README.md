@@ -165,6 +165,18 @@ The repository demonstrates authentication, CRUD/domain code, database initializ
 
 These are boundaries of the current artifact, not advertised future features.
 
+## Product & engineering roadmap
+
+The repository keeps its future evolution in [`ROADMAP.md`](./ROADMAP.md) instead of mixing planned capabilities into current evidence.
+
+Roadmap status model:
+
+- ✅ implemented/evidenced;
+- 🔄 priority engineering direction;
+- 🧭 strategic evolution, not current functionality.
+
+The roadmap covers authorization/RBAC, broader automated testing, API consistency, richer billing/inventory domain rules, Angular UX/testing, persistence maturity, security and deployment paths. A roadmap item becomes current evidence only after its implementation is versioned and the relevant quality checks remain green.
+
 ## Portfolio classification
 
 **Category:** Angular + PHP full-stack academic evidence  
@@ -177,7 +189,7 @@ See the main [GitHub profile](https://github.com/JavierQuinan) and [Portfolio Go
 
 ## Resumen en español
 
-Proyecto académico full stack con **Angular 18 + PHP + SQLite** que demuestra CRUD de clientes/productos/proveedores/facturación, autenticación con `password_hash/password_verify`, CORS por allowlist, inicialización reproducible de SQLite, creación segura de usuario local mediante variables de entorno y smoke tests de autenticación. GitHub Actions verificó exitosamente el baseline PHP/SQLite/autenticación y el build de producción de Angular. La interfaz administrativa utiliza como base Mantis Free Angular Admin Template de CodedThemes y mantiene su atribución.
+Proyecto académico full stack con **Angular 18 + PHP + SQLite** que demuestra CRUD de clientes/productos/proveedores/facturación, autenticación con `password_hash/password_verify`, CORS por allowlist, inicialización reproducible de SQLite, creación segura de usuario local mediante variables de entorno y smoke tests de autenticación. GitHub Actions verificó exitosamente el baseline PHP/SQLite/autenticación y el build de producción de Angular. La interfaz administrativa utiliza como base Mantis Free Angular Admin Template de CodedThemes y mantiene su atribución. El roadmap conserva la evolución futura sin presentarla como funcionalidad ya implementada.
 
 ## License
 
